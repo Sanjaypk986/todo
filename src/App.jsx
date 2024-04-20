@@ -8,6 +8,8 @@ function App() {
   const [toDo , setTodo] = useState('')
 // state for todolist
   const [todoList, SetTodolist] = useState([])
+// state for EditTodo
+  const [edit,setEdit] = useState(null)
 
   // useefect for run to get current day
   useEffect(() => {
@@ -28,6 +30,12 @@ function App() {
     const deleteList = todoList.filter((todo) => todo.id !== deleteId);
     SetTodolist(deleteList);
     }
+  // edit todo function
+    const editTodo = (id)=>{
+      const updateTodo = todoList.find(todo=> todo.id === id)
+      setTodo(updateTodo.text)
+      setEdit(id)
+    }
 // return of app
   return (
     <div className="app">
@@ -39,13 +47,22 @@ function App() {
         <h2>{currentDay}</h2>
       </div>
       <div className="input">
-{/* onhange evnt on input field */}
-        <input value={toDo } onChange={(event)=>{setTodo(event.target.value)}} type="text" placeholder="🖊️ Add item..." />
+{/* onhange event on input field */}
+        <input value={toDo } onChange={(event)=>{setTodo(event.target.value), console.log(event.target.value);}} type="text" placeholder="🖊️ Add item..." />
         <i onClick={()=>{
-// if dtatment for todo is empty or not
+// if statment for todo is empty or not
           if (toDo.trim() !== '') {
           SetTodolist([...todoList,{id : Date.now(), text : toDo, status : false}]) 
           setTodo('');
+  // edit conditions and logic
+          if (edit) {
+            const updateTodos = todoList.map((to)=> to.id === edit
+            ?(to = {id : to.id , text : toDo}): (to = {id : to.id , text : to.text}))
+            SetTodolist(updateTodos)
+  // after that set this default conditions
+            setEdit(null)
+            setTodo('');
+          }
           }}} className="fas fa-plus"></i>
       </div>
       <div className="todos">
@@ -71,12 +88,13 @@ function App() {
                 <div className="right">
 {/* removeToDo variable call for delete ToDo */}
                 <i onClick={() => removeTodo(list.id)} className="fas fa-times"></i>
+                <i onClick={() => editTodo(list.id)} className="fas fa-edit"></i>
                 </div>
               </div>
             )
           })
         }
-      </div>    
+      </div>
     </div>
   );
 }
